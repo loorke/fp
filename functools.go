@@ -88,7 +88,7 @@ func Find[tA any](p func(tA) bool, a []tA) Maybe[tA] {
 		}, a)
 }
 
-func All[tA comparable](p func(tA) bool, a []tA) bool {
+func All[tA any](p func(tA) bool, a []tA) bool {
 	return Find(func(e tA) bool {
 		return !p(e)
 	}, a).Empty
@@ -97,7 +97,7 @@ func All[tA comparable](p func(tA) bool, a []tA) bool {
 // Basically, this's an alias for golang.org/x/exp/slices Contains(), but
 // for some reason no All()-like function was added there so I decided to make
 // this slick duplicate for the sake of completeness
-func Any[tA comparable](p func(tA) bool, a []tA) bool {
+func Any[tA any](p func(tA) bool, a []tA) bool {
 	return !Find(func(e tA) bool {
 		return p(e)
 	}, a).Empty
