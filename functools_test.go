@@ -77,14 +77,15 @@ func TestZip(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	{
-		res := Find(Eq(3), []int{1, 2, 3, 4, 5})
-		require.False(t, res.Empty)
-		require.Equal(t, 3, res.Value)
+		res, ok := Find(Eq(3), []int{1, 2, 3, 4, 5})
+		require.True(t, ok)
+		require.Equal(t, 3, res)
 	}
 
 	{
-		res := Find(Eq(666), []int{1, 2, 3, 4, 5})
-		require.True(t, res.Empty)
+		res, ok := Find(Eq(666), []int{1, 2, 3, 4, 5})
+		require.False(t, ok)
+		require.Zero(t, res)
 	}
 }
 

@@ -67,21 +67,16 @@ func Zip[tA, tB any](a []tA, b []tB) []Tuple[tA, tB] {
 	}
 }
 
-type Maybe[tA any] struct {
-	Empty bool
-	Value tA
-}
-
-func FindIndexed[tA any](p func(tA, int) bool, a []tA) Maybe[tA] {
+func FindIndexed[tA any](p func(tA, int) bool, a []tA) (e tA, ok bool) {
 	for i, e := range a {
 		if p(e, i) {
-			return Maybe[tA]{Value: e}
+			return e, true
 		}
 	}
-	return Maybe[tA]{Empty: true}
+	return e, false
 }
 
-func Find[tA any](p func(tA) bool, a []tA) Maybe[tA] {
+func Find[tA any](p func(tA) bool, a []tA) (e tA, ok bool) {
 	return FindIndexed(
 		func(e tA, _ int) bool {
 			return p(e)
@@ -89,18 +84,20 @@ func Find[tA any](p func(tA) bool, a []tA) Maybe[tA] {
 }
 
 func All[tA any](p func(tA) bool, a []tA) bool {
-	return Find(func(e tA) bool {
+	_, ok := Find(func(e tA) bool {
 		return !p(e)
-	}, a).Empty
+	}, a)
+	return !ok
 }
 
 // Basically, this's an alias for golang.org/x/exp/slices Contains(), but
 // for some reason no All()-like function was added there so I decided to make
 // this slick duplicate for the sake of completeness
 func Any[tA any](p func(tA) bool, a []tA) bool {
-	return !Find(func(e tA) bool {
+	_, ok := Find(func(e tA) bool {
 		return p(e)
-	}, a).Empty
+	}, a)
+	return ok
 }
 
 type RealNumber interface {
