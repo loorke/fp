@@ -1,7 +1,7 @@
 # Functional programming library built with Go generics
 
 This package introduce some common functional programming functions as well as their indexed versions.
-Implemented functions and types mimic Haskell Prelude.
+Implemented functions and types are inspired by Haskell Prelude.
 
 - reduce (foldl)
 - map
@@ -16,8 +16,8 @@ Implemented functions and types mimic Haskell Prelude.
 - sum
 - product
 
-Author didn't intend to write a complete Prelude that could've been used in the same manner as in Haskell.
-The package can be useful in some casual situations like the following:
+The package isn't intended to completely implement Prelude, but rather it's an
+useful tool for some casual issues like the following:
 
 ```go
 type StorageTimeModel struct{
