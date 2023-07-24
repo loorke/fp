@@ -113,6 +113,10 @@ type ComplexNumber interface {
 	RealNumber | ~complex64 | ~complex128
 }
 
+type Ordered interface {
+	RealNumber | ~string
+}
+
 func Eq[tA comparable](a tA) func(b tA) bool {
 	return func(b tA) bool {
 		return a == b
@@ -125,32 +129,32 @@ func NEq[tA comparable](a tA) func(b tA) bool {
 	}
 }
 
-func Lt[tA RealNumber | string](a tA) func(b tA) bool {
+func Lt[tA Ordered](a tA) func(b tA) bool {
 	return func(b tA) bool {
 		return a < b
 	}
 }
 
-func LtEq[tA RealNumber | string](a tA) func(b tA) bool {
+func LtEq[tA Ordered](a tA) func(b tA) bool {
 	return func(b tA) bool {
 		return a <= b
 	}
 }
 
-func Gt[tA RealNumber | string](a tA) func(b tA) bool {
+func Gt[tA Ordered](a tA) func(b tA) bool {
 	return func(b tA) bool {
 		return a > b
 	}
 }
 
-func GtEq[tA RealNumber | string](a tA) func(b tA) bool {
+func GtEq[tA Ordered](a tA) func(b tA) bool {
 	return func(b tA) bool {
 		return a >= b
 	}
 }
 
 // Function isn't total: it'll panic if applied to an empty slice
-func Minimum[tA RealNumber | string](a []tA) tA {
+func Minimum[tA Ordered](a []tA) tA {
 	min := a[0]
 	for _, e := range a[1:] {
 		if e < min {
@@ -161,7 +165,7 @@ func Minimum[tA RealNumber | string](a []tA) tA {
 }
 
 // Function isn't total: it'll panic if applied to an empty slice
-func Maximum[tA RealNumber | string](a []tA) tA {
+func Maximum[tA Ordered](a []tA) tA {
 	max := a[0]
 	for _, e := range a[1:] {
 		if e > max {
