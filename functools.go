@@ -1,6 +1,6 @@
 package fp
 
-func ReduceIndexed[tA, tB any](f func(tB, tA, int) tB, z tB, a []tA) tB {
+func ReduceIndexed[tA, tB any](f func(tB, tA, int) tB, z tB, a ...tA) tB {
 	acc := z
 	for i, v := range a {
 		acc = f(acc, v, i)
@@ -9,28 +9,28 @@ func ReduceIndexed[tA, tB any](f func(tB, tA, int) tB, z tB, a []tA) tB {
 	return acc
 }
 
-func Reduce[tA, tB any](f func(tB, tA) tB, z tB, a []tA) tB {
+func Reduce[tA, tB any](f func(tB, tA) tB, z tB, a ...tA) tB {
 	return ReduceIndexed(
 		func(acc tB, e tA, _ int) tB {
 			return f(acc, e)
-		}, z, a)
+		}, z, a...)
 }
 
-func MapIndexed[tA, tB any](f func(tA, int) tB, a []tA) []tB {
+func MapIndexed[tA, tB any](f func(tA, int) tB, a ...tA) []tB {
 	return ReduceIndexed(
 		func(acc []tB, e tA, i int) []tB {
 			return append(acc, f(e, i))
-		}, make([]tB, 0, len(a)), a)
+		}, make([]tB, 0, len(a)), a...)
 }
 
-func Map[tA, tB any](f func(tA) tB, args []tA) []tB {
+func Map[tA, tB any](f func(tA) tB, args ...tA) []tB {
 	return MapIndexed(
 		func(e tA, _ int) tB {
 			return f(e)
-		}, args)
+		}, args...)
 }
 
-func FilterIndexed[tA any](p func(tA, int) bool, a []tA) []tA {
+func FilterIndexed[tA any](p func(tA, int) bool, a ...tA) []tA {
 	return ReduceIndexed(
 		func(acc []tA, e tA, i int) []tA {
 			if p(e, i) {
@@ -38,14 +38,14 @@ func FilterIndexed[tA any](p func(tA, int) bool, a []tA) []tA {
 			} else {
 				return acc
 			}
-		}, []tA{}, a)
+		}, []tA{}, a...)
 }
 
-func Filter[tA any](p func(tA) bool, a []tA) []tA {
+func Filter[tA any](p func(tA) bool, a ...tA) []tA {
 	return FilterIndexed(
 		func(e tA, _ int) bool {
 			return p(e)
-		}, a)
+		}, a...)
 }
 
 type Tuple[tA, tB any] struct {
@@ -58,16 +58,16 @@ func Zip[tA, tB any](a []tA, b []tB) []Tuple[tA, tB] {
 		return ReduceIndexed(
 			func(acc []Tuple[tA, tB], e tA, i int) []Tuple[tA, tB] {
 				return append(acc, Tuple[tA, tB]{e, b[i]})
-			}, make([]Tuple[tA, tB], 0, la), a)
+			}, make([]Tuple[tA, tB], 0, la), a...)
 	} else {
 		return ReduceIndexed(
 			func(acc []Tuple[tA, tB], e tB, i int) []Tuple[tA, tB] {
 				return append(acc, Tuple[tA, tB]{a[i], e})
-			}, make([]Tuple[tA, tB], 0, lb), b)
+			}, make([]Tuple[tA, tB], 0, lb), b...)
 	}
 }
 
-func FindIndexed[tA any](p func(tA, int) bool, a []tA) (e tA, ok bool) {
+func FindIndexed[tA any](p func(tA, int) bool, a ...tA) (e tA, ok bool) {
 	for i, e := range a {
 		if p(e, i) {
 			return e, true
@@ -76,27 +76,27 @@ func FindIndexed[tA any](p func(tA, int) bool, a []tA) (e tA, ok bool) {
 	return e, false
 }
 
-func Find[tA any](p func(tA) bool, a []tA) (e tA, ok bool) {
+func Find[tA any](p func(tA) bool, a ...tA) (e tA, ok bool) {
 	return FindIndexed(
 		func(e tA, _ int) bool {
 			return p(e)
-		}, a)
+		}, a...)
 }
 
-func All[tA any](p func(tA) bool, a []tA) bool {
+func All[tA any](p func(tA) bool, a ...tA) bool {
 	_, ok := Find(func(e tA) bool {
 		return !p(e)
-	}, a)
+	}, a...)
 	return !ok
 }
 
 // Basically, this's an alias for golang.org/x/exp/slices Contains(), but
 // for some reason no All()-like function was added there so I decided to make
 // this slick duplicate for the sake of completeness
-func Any[tA any](p func(tA) bool, a []tA) bool {
+func Any[tA any](p func(tA) bool, a ...tA) bool {
 	_, ok := Find(func(e tA) bool {
 		return p(e)
-	}, a)
+	}, a...)
 	return ok
 }
 
@@ -151,7 +151,7 @@ func GtEq[tA Ordered](a tA) func(b tA) bool {
 }
 
 // Function isn't total: it'll panic if applied to an empty slice
-func Minimum[tA Ordered](a []tA) tA {
+func Minimum[tA Ordered](a ...tA) tA {
 	min := a[0]
 	for _, e := range a[1:] {
 		if e < min {
@@ -162,7 +162,7 @@ func Minimum[tA Ordered](a []tA) tA {
 }
 
 // Function isn't total: it'll panic if applied to an empty slice
-func Maximum[tA Ordered](a []tA) tA {
+func Maximum[tA Ordered](a ...tA) tA {
 	max := a[0]
 	for _, e := range a[1:] {
 		if e > max {
@@ -174,7 +174,7 @@ func Maximum[tA Ordered](a []tA) tA {
 
 // Surprisingly, this function can concatenate a slice of strings as well.
 // Returns 0 when a is an empty slice
-func Sum[tA ComplexNumber](a []tA) tA {
+func Sum[tA ComplexNumber](a ...tA) tA {
 	var sum tA
 	for _, e := range a {
 		sum += e
@@ -184,7 +184,7 @@ func Sum[tA ComplexNumber](a []tA) tA {
 
 // Function isn't total: it'll panic if applied to an empty slice
 // Returns 1 when a is an empty slice
-func Product[tA ComplexNumber](a []tA) tA {
+func Product[tA ComplexNumber](a ...tA) tA {
 	var prod tA = 1
 	for _, e := range a {
 		prod *= e
