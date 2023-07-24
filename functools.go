@@ -150,6 +150,43 @@ func GtEq[tA Ordered](a tA) func(b tA) bool {
 	}
 }
 
+func LenS[tA any](l int) func(a []tA) bool {
+	return func(a []tA) bool {
+		return len(a) == l
+	}
+}
+
+func EmptyS[tA any](a []tA) bool {
+	return len(a) == 0
+}
+
+func NotEmptyS[tA any](a []tA) bool {
+	return !EmptyS(a)
+}
+
+func LenM[tA comparable, tB any](l int) func(a map[tA]tB) bool {
+	return func(a map[tA]tB) bool {
+		return len(a) == l
+	}
+}
+
+func EmptyM[tA comparable, tB any](a map[tA]tB) bool {
+	return len(a) == 0
+}
+
+func NotEmptyM[tA comparable, tB any](a map[tA]tB) bool {
+	return !EmptyM(a)
+}
+
+func Zero[tA comparable](a tA) bool {
+	var z tA
+	return a == z
+}
+
+func NotZero[tA comparable](a tA) bool {
+	return !Zero(a)
+}
+
 // Function isn't total: it'll panic if applied to an empty slice
 func Minimum[tA Ordered](a ...tA) tA {
 	min := a[0]
