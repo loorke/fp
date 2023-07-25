@@ -8,7 +8,7 @@ Implemented functions and types are inspired by Haskell Prelude.
 - filter
 - zip
 - find
-- Curried comparisment functions: Eq, NEq, Lt, LtEq, Gt, GtEq; and Zero() predicate
+- Curried comparisment functions: Eq, NEq, Lt, LtEq, Gt, GtEq
 - Zero value and length predicates: LenS, LenM, EmptyS, NotEmptyS, EmptyM, NotEmptyM, Zero, NotZero
 - all
 - any
