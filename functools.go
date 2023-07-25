@@ -251,8 +251,8 @@ func ReduceMZ[tA comparable, tB, tC any](f func(tC, tA, tB) tC, m map[tA]tB) tC 
 	return ReduceM(f, Null[tC](), m)
 }
 
-// func MapM[tA comparable, tB, tC any](f func(tA, tB) tC, m map[tA]tB) map[tA]tC {
-// 	return ReduceM(func(acc map[tA]tC, k tA, v tB) map[tA]tC {
-
-// 	}, make(map[tA]tC, len(m)), m)
-// }
+func MapM[tA comparable, tB, tC any](f func(tA, tB) tC, m map[tA]tB) []tC {
+	return ReduceM(func(acc []tC, k tA, v tB) []tC {
+		return append(acc, f(k, v))
+	}, make([]tC, 0, len(m)), m)
+}
