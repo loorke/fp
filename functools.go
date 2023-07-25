@@ -5,7 +5,6 @@ func ReduceIndexed[tA, tB any](f func(tB, tA, int) tB, z tB, a ...tA) tB {
 	for i, v := range a {
 		acc = f(acc, v, i)
 	}
-
 	return acc
 }
 
@@ -14,6 +13,10 @@ func Reduce[tA, tB any](f func(tB, tA) tB, z tB, a ...tA) tB {
 		func(acc tB, e tA, _ int) tB {
 			return f(acc, e)
 		}, z, a...)
+}
+
+func ReduceZ[tA, tB any](f func(tB, tA) tB, a ...tA) tB {
+	return Reduce(f, Null[tB](), a...)
 }
 
 func MapIndexed[tA, tB any](f func(tA, int) tB, a ...tA) []tB {
@@ -179,8 +182,7 @@ func NotEmptyM[tA comparable, tB any](a map[tA]tB) bool {
 }
 
 func Zero[tA comparable](a tA) bool {
-	var z tA
-	return a == z
+	return a == Null[tA]()
 }
 
 func NotZero[tA comparable](a tA) bool {
@@ -228,3 +230,29 @@ func Product[tA ComplexNumber](a ...tA) tA {
 	}
 	return prod
 }
+
+func Null[tA any]() tA {
+	var z tA
+	return z
+}
+
+//////////
+/// Maps
+
+func ReduceM[tA comparable, tB, tC any](f func(tC, tA, tB) tC, z tC, m map[tA]tB) tC {
+	acc := z
+	for k, v := range m {
+		acc = f(acc, k, v)
+	}
+	return acc
+}
+
+func ReduceMZ[tA comparable, tB, tC any](f func(tC, tA, tB) tC, m map[tA]tB) tC {
+	return ReduceM(f, Null[tC](), m)
+}
+
+// func MapM[tA comparable, tB, tC any](f func(tA, tB) tC, m map[tA]tB) map[tA]tC {
+// 	return ReduceM(func(acc map[tA]tC, k tA, v tB) map[tA]tC {
+
+// 	}, make(map[tA]tC, len(m)), m)
+// }
