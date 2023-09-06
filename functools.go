@@ -1,5 +1,9 @@
 package fp
 
+import (
+	"fmt"
+)
+
 func ReduceIndexed[tA, tB any](f func(tB, tA, int) tB, z tB, a ...tA) tB {
 	acc := z
 	for i, v := range a {
@@ -93,14 +97,21 @@ func All[tA any](p func(tA) bool, a ...tA) bool {
 	return !ok
 }
 
-// Basically, this's an alias for golang.org/x/exp/slices Contains(), but
-// for some reason no All()-like function was added there so I decided to make
-// this slick duplicate for the sake of completeness
 func Any[tA any](p func(tA) bool, a ...tA) bool {
 	_, ok := Find(func(e tA) bool {
 		return p(e)
 	}, a...)
 	return ok
+}
+
+// Basically, this's an alias for golang.org/x/exp/slices Contains(), but
+// for some reason no All()-like function was added there so I decided to make
+// this slick duplicate for the sake of completeness
+func Includes[tA comparable](a ...tA) func(tA) bool {
+	return func(t tA) bool {
+		_, ok := Find(Eq(t), a...)
+		return ok
+	}
 }
 
 type RealNumber interface {
@@ -236,6 +247,10 @@ func Null[tA any]() tA {
 	return z
 }
 
+func Assert[tA any](e any) tA {
+	return e.(tA)
+}
+
 //////////
 /// Maps
 
@@ -255,4 +270,52 @@ func MapM[tA comparable, tB, tC any](f func(tA, tB) tC, m map[tA]tB) []tC {
 	return ReduceM(func(acc []tC, k tA, v tB) []tC {
 		return append(acc, f(k, v))
 	}, make([]tC, 0, len(m)), m)
+}
+
+var ErrNil = errNil("_")
+
+type errNil string
+
+func (e errNil) Error() string {
+	return fmt.Sprintf(
+		"forbidden nil value of type \"%s\"", string(e))
+}
+
+func (e errNil) Is(t error) bool {
+	_, ok := t.(errNil)
+	return ok
+}
+
+func MustNonNil[tA any](v *tA) {
+	if v == nil {
+		panic(errNil(fmt.Sprintf("%T", v)))
+	}
+}
+
+func IsNonNil[tA any](v *tA) bool {
+	return v != nil
+}
+
+var ErrNonNil = errNonNil("_")
+
+type errNonNil string
+
+func (e errNonNil) Error() string {
+	return fmt.Sprintf(
+		"forbidden non-nil value of type \"%s\"", string(e))
+}
+
+func (e errNonNil) Is(t error) bool {
+	_, ok := t.(errNonNil)
+	return ok
+}
+
+func MustNil[tA any](v *tA) {
+	if v != nil {
+		panic(errNonNil(fmt.Sprintf("%T", v)))
+	}
+}
+
+func IsNil[tA any](v *tA) bool {
+	return v == nil
 }

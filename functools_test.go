@@ -1,6 +1,8 @@
 package fp
 
 import (
+	"errors"
+	"log"
 	"strconv"
 	"testing"
 
@@ -145,4 +147,34 @@ func TestSumProd(t *testing.T) {
 		res := Product(1, 2, 3, 4, 5)
 		require.Equal(t, 120, res)
 	}
+}
+
+func TestNilAssertions(t *testing.T) {
+	func() {
+		defer func() {
+			v := recover()
+			require.NotNil(t, v)
+			err, ok := v.(error)
+			log.Println(err)
+			require.True(t, ok)
+			require.True(t, errors.Is(err, ErrNil))
+		}()
+
+		var i *int
+		MustNonNil(i)
+	}()
+
+	func() {
+		defer func() {
+			v := recover()
+			require.NotNil(t, v)
+			err, ok := v.(error)
+			log.Println(err)
+			require.True(t, ok)
+			require.True(t, errors.Is(err, ErrNonNil))
+		}()
+
+		var i int
+		MustNil(&i)
+	}()
 }
