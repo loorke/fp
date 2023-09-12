@@ -247,6 +247,10 @@ func Null[tA any]() tA {
 	return z
 }
 
+func NullOf[tA any](tA) tA {
+	return Null[tA]()
+}
+
 func Assert[tA any](e any) tA {
 	return e.(tA)
 }
