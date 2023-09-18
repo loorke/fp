@@ -114,6 +114,9 @@ func Includes[tA comparable](a ...tA) func(tA) bool {
 	}
 }
 
+//////////
+/// Ordering
+
 type RealNumber interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
@@ -222,6 +225,9 @@ func Maximum[tA Ordered](a ...tA) tA {
 	return max
 }
 
+//////////
+/// Arithmetics
+
 // Surprisingly, this function can concatenate a slice of strings as well.
 // Returns 0 when a is an empty slice
 func Sum[tA ComplexNumber](a ...tA) tA {
@@ -241,6 +247,9 @@ func Product[tA ComplexNumber](a ...tA) tA {
 	}
 	return prod
 }
+
+//////////
+/// Null checks
 
 func Null[tA any]() tA {
 	var z tA
@@ -276,7 +285,10 @@ func MapM[tA comparable, tB, tC any](f func(tA, tB) tC, m map[tA]tB) []tC {
 	}, make([]tC, 0, len(m)), m)
 }
 
-var ErrNil = errNil("_")
+//////////
+/// Assertions
+
+var ErrNil error = errNil("_")
 
 type errNil string
 
@@ -300,7 +312,7 @@ func IsNonNil[tA any](v *tA) bool {
 	return v != nil
 }
 
-var ErrNonNil = errNonNil("_")
+var ErrNonNil error = errNonNil("_")
 
 type errNonNil string
 
@@ -322,4 +334,38 @@ func MustNil[tA any](v *tA) {
 
 func IsNil[tA any](v *tA) bool {
 	return v == nil
+}
+
+//////////
+/// Conditions
+
+// Returns right if true
+func LazyCond[tA any](left tA) func(right tA) func(bool) tA {
+	return func(right tA) func(bool) tA {
+		return func(b bool) tA {
+			if b {
+				return right
+			} else {
+				return left
+			}
+		}
+	}
+}
+
+// Returns right if true
+func Cond[tA any](left, right tA, b bool) tA {
+	if b {
+		return right
+	} else {
+		return left
+	}
+}
+
+// Returns right if true and zero value if false
+func CondZ[tA any](right tA, b bool) tA {
+	if b {
+		return right
+	} else {
+		return Null[tA]()
+	}
 }
