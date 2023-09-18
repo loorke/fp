@@ -340,7 +340,7 @@ func IsNil[tA any](v *tA) bool {
 /// Conditions
 
 // Returns right if true
-func LazyCond[tA any](left tA) func(right tA) func(bool) tA {
+func Cond[tA any](left tA) func(right tA) func(bool) tA {
 	return func(right tA) func(bool) tA {
 		return func(b bool) tA {
 			if b {
@@ -352,20 +352,7 @@ func LazyCond[tA any](left tA) func(right tA) func(bool) tA {
 	}
 }
 
-// Returns right if true
-func Cond[tA any](left, right tA, b bool) tA {
-	if b {
-		return right
-	} else {
-		return left
-	}
-}
-
-// Returns right if true and zero value if false
-func CondZ[tA any](right tA, b bool) tA {
-	if b {
-		return right
-	} else {
-		return Null[tA]()
-	}
+// // Returns right if true and zero value if false
+func CondZ[tA any](right tA) func(bool) tA {
+	return Cond(Null[tA]())(right)
 }
