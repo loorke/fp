@@ -2,12 +2,16 @@ package fp
 
 import (
 	"errors"
-	"log"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestShrinkSpread(t *testing.T) {
+	require.Equal(t, 6,
+		Spread(Shrink(Product[int]))(1, 2, 3))
+}
 
 func TestReduce(t *testing.T) {
 	{
@@ -77,6 +81,22 @@ func TestZip(t *testing.T) {
 	}
 }
 
+func TestPredicatesAndOrdering(t *testing.T) {
+	type predicate func(int) bool
+	var p predicate = func(x int) bool {
+		return x == 666
+	}
+
+	require.True(t, Not(p)(600))
+	require.True(t, All(Gt(10), 11, 22, 30))
+	require.True(t, Any(IsZero[int], 12, 13, 0, 14))
+}
+
+func TestConditions(t *testing.T) {
+	require.True(t, Cond(true, false)(false))
+	require.True(t, CondZ(true)(true))
+}
+
 func TestFind(t *testing.T) {
 	{
 		res, ok := Find(Eq(3), 1, 2, 3, 4, 5)
@@ -93,19 +113,19 @@ func TestFind(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	{
-		res := All(Lt(1), 2, 3, 4, 5, 6)
+		res := All(Gt(1), 2, 3, 4, 5, 6)
 		require.True(t, res)
 	}
 
 	{
-		res := All(Lt(1), 2, 3, 4, 1, 5, 6)
+		res := All(Gt(1), 2, 3, 4, 1, 5, 6)
 		require.False(t, res)
 	}
 }
 
 func TestAny(t *testing.T) {
 	{
-		res := Any(GtEq(1), 2, 3, 4, 5, 6)
+		res := Any(LtEq(1), 2, 3, 4, 5, 6)
 		require.False(t, res)
 	}
 
@@ -125,6 +145,18 @@ func TestMinMax(t *testing.T) {
 		res := Minimum(1, 2, 3, 4, 5)
 		require.Equal(t, 1, res)
 	}
+}
+
+func TestNoDuplicates(t *testing.T) {
+	dup, index := FindDupsIndex(1, 2, 3, 4, 5)
+	require.Equal(t, -1, index)
+	require.Zero(t, dup)
+
+	dup, index = FindDupsIndex(1, 2, 1, 3, 4, 5)
+	require.Equal(t, 2, index)
+	require.Equal(t, 1, dup)
+
+	require.False(t, NoDups(1, 2, 1, 3, 4, 5))
 }
 
 func TestSumProd(t *testing.T) {
@@ -149,32 +181,82 @@ func TestSumProd(t *testing.T) {
 	}
 }
 
-func TestNilAssertions(t *testing.T) {
+func TestMust(t *testing.T) {
 	func() {
 		defer func() {
-			v := recover()
-			require.NotNil(t, v)
-			err, ok := v.(error)
-			log.Println(err)
-			require.True(t, ok)
-			require.True(t, errors.Is(err, ErrNil))
+			if rec := recover(); rec != nil {
+				err := rec.(error)
+				require.True(t, errors.Is(err, ErrMust))
+				me := err.(MustError)
+				require.Equal(t,
+					"failure for value \"1\": greater than zero",
+					me.Error())
+			}
 		}()
 
-		var i *int
-		MustNonNil(i)
+		Must(Lt(0), "greater than zero", 1)
 	}()
 
 	func() {
 		defer func() {
-			v := recover()
-			require.NotNil(t, v)
-			err, ok := v.(error)
-			log.Println(err)
-			require.True(t, ok)
-			require.True(t, errors.Is(err, ErrNonNil))
+			if rec := recover(); rec != nil {
+				err := rec.(error)
+				require.True(t, errors.Is(err, ErrMust))
+				me := err.(MustError)
+				require.Equal(t,
+					"failure for value \"1\" at position 1: greater than zero",
+					me.Error())
+			}
 		}()
 
-		var i int
-		MustNil(&i)
+		Must(Lt(0), "greater than zero", -1, 1)
+
+		Must(IsNotZero, "ololo", 1, 2, 3)
+	}()
+
+	func() {
+		defer func() {
+			if rec := recover(); rec != nil {
+				err := rec.(error)
+				require.True(t, errors.Is(err, ErrMust))
+				me := err.(MustError)
+				require.Equal(t,
+					"failure for value \"[1 2 3 4 5 6 6]\": uniqueness is not preserved",
+					me.Error())
+			}
+		}()
+
+		Set(1, 2, 3, 4, 5, 6, 6)
 	}()
 }
+
+// func TestNilAssertions(t *testing.T) {
+// 	func() {
+// 		defer func() {
+// 			v := recover()
+// 			require.NotNil(t, v)
+// 			err, ok := v.(error)
+// 			log.Println(err)
+// 			require.True(t, ok)
+// 			require.True(t, errors.Is(err, ErrNil))
+// 		}()
+
+// 		var i *int
+// 		MustNonNil(i)
+// 	}()
+
+// 	func() {
+// 		defer func() {
+// 			v := recover()
+// 			require.NotNil(t, v)
+// 			err, ok := v.(error)
+// 			log.Println(err)
+// 			require.True(t, ok)
+// 			require.True(t, errors.Is(err, ErrNonNil))
+// 		}()
+
+// 		var i int
+// 		MustNil(&i)
+// 	}()
+
+// }

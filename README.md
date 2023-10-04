@@ -1,15 +1,16 @@
 # Functional programming library built with Go generics
 
-This package introduce some common functional programming functions as well as their indexed versions.
-Implemented functions and types are inspired by Haskell Prelude.
+This library introduces various functional programming miscellaneous that are
+useful in a number of scenarious. It aims to both provide some long-awaited 
+sugar and examine the limits of recentely introduced Go generics. Implemented 
+functions and types are partially inspired by Haskell Prelude.
 
 - reduce (foldl)
 - map
 - filter
 - zip
 - find
-- Curried comparisment functions: Eq, NEq, Lt, LtEq, Gt, GtEq
-- Zero value and length predicates: LenS, LenM, EmptyS, NotEmptyS, EmptyM, NotEmptyM, Zero, NotZero
+- Predicates and curried comparisment functions: IsZero, Eq, NEq, Lt, LtEq, Gt, GtEq
 - all
 - any
 - minimum
@@ -36,7 +37,7 @@ func RPC_GetTimeseries() []TransportTimeModel {
         return TransportTimeModel{
             Time: e.Time.Unix(),
         }
-    }, series)
+    }, series...)
     
 }
 ```
