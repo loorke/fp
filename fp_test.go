@@ -226,8 +226,12 @@ func TestMust(t *testing.T) {
 			}
 		}()
 
-		Set(1, 2, 3, 4, 5, 6, 6)
+		Enum(1, 2, 3, 4, 5, 6, 6)
 	}()
+}
+
+func TestSet(t *testing.T) {
+	require.True(t, Set(1, 2, 3, 4)[3])
 }
 
 // func TestNilAssertions(t *testing.T) {
