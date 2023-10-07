@@ -18,7 +18,7 @@ functions and types are partially inspired by Haskell Prelude.
 - sum
 - product
 
-The package isn't intended to completely implement Prelude, but rather it's an
+The package isn't intended to completely implement the Prelude, but rather it's an
 useful tool for some casual issues like the following:
 
 ```go
