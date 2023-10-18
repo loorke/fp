@@ -27,7 +27,9 @@ Checks and validations
 */
 package fp
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func ReduceIndex[
 	tA, tB any,
@@ -99,6 +101,19 @@ func Filter[
 		func(e tA, _ int) bool {
 			return p(e)
 		}, a...)
+}
+
+func Count[
+	tA any,
+	tF ~func(tA) bool,
+](p tF, a ...tA) int {
+	var i int
+	for _, e := range a {
+		if p(e) {
+			i++
+		}
+	}
+	return i
 }
 
 type Tuple[tA, tB any] struct {
@@ -482,7 +497,8 @@ func MMapM[
 
 // Ensures uniqueness of all passed arguments
 func Enum[tA comparable](a ...tA) []tA {
-	Must(Shrink[tA](NoDups), "uniqueness is not preserved", a)
+	dup, i := FindDupsIndex(a...)
+	Must(Eq(-1), fmt.Sprintf("duplicate value \"%v\"; index: %d", dup, i), i)
 	return a
 }
 
@@ -501,12 +517,14 @@ func Must[
 	}
 }
 
-var ErrMust error = MustError{}
+func MustNonNil(exceptionMsg string, a ...any) {
+	Must(IsNotZero, exceptionMsg, a...)
+}
 
 type MustError struct {
 	Msg string
 	Val any
-	Pos *int // non-nil for Every() panics
+	Pos *int // non-nil if multiple values were provided to Must()
 }
 
 func (e MustError) Error() string {
@@ -518,9 +536,12 @@ func (e MustError) Error() string {
 	return fmt.Sprintf("failure for value \"%v\"%s: %s", e.Val, pos, e.Msg)
 }
 
-func (e MustError) Is(t error) bool {
-	_, ok := t.(MustError)
-	return ok
+func (e MustError) Unwrap() error {
+	err, ok := e.Val.(error)
+	if ok {
+		return err
+	}
+	return nil
 }
 
 //////////

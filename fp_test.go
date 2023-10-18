@@ -60,6 +60,11 @@ func TestFilter(t *testing.T) {
 	}
 }
 
+func TestCount(t *testing.T) {
+	c := Count(IsNotZero, 1, 2, 3, 4, 5)
+	require.Equal(t, 5, c)
+}
+
 func TestZip(t *testing.T) {
 	{
 		res := Zip([]int{1, 2, 3, 4}, []string{"1", "2", "3"})
@@ -186,7 +191,7 @@ func TestMust(t *testing.T) {
 		defer func() {
 			if rec := recover(); rec != nil {
 				err := rec.(error)
-				require.True(t, errors.Is(err, ErrMust))
+				require.True(t, errors.As(err, &MustError{}))
 				me := err.(MustError)
 				require.Equal(t,
 					"failure for value \"1\": greater than zero",
@@ -201,7 +206,7 @@ func TestMust(t *testing.T) {
 		defer func() {
 			if rec := recover(); rec != nil {
 				err := rec.(error)
-				require.True(t, errors.Is(err, ErrMust))
+				require.True(t, errors.As(err, &MustError{}))
 				me := err.(MustError)
 				require.Equal(t,
 					"failure for value \"1\" at position 1: greater than zero",
@@ -218,15 +223,46 @@ func TestMust(t *testing.T) {
 		defer func() {
 			if rec := recover(); rec != nil {
 				err := rec.(error)
-				require.True(t, errors.Is(err, ErrMust))
+				require.True(t, errors.As(err, &MustError{}))
 				me := err.(MustError)
 				require.Equal(t,
-					"failure for value \"[1 2 3 4 5 6 6]\": uniqueness is not preserved",
+					"failure for value \"6\": duplicate value \"6\"; index: 6",
 					me.Error())
 			}
 		}()
 
 		Enum(1, 2, 3, 4, 5, 6, 6)
+	}()
+
+	func() {
+		err1 := errors.New("wrapped error")
+		defer func() {
+			if rec := recover(); rec != nil {
+				err := rec.(error)
+				require.True(t, errors.As(err, &MustError{}))
+				require.True(t, errors.Is(err, err1))
+			}
+		}()
+
+		func() {
+			defer func() {
+				if rec := recover(); rec != nil {
+					err := rec.(error)
+					panic(errors.Join(err))
+				}
+			}()
+
+			Must(IsZero, "Unwrap()", err1)
+		}()
+	}()
+
+	func() {
+		defer func() {
+			rec := recover()
+			require.Nil(t, rec)
+		}()
+
+		MustNonNil("must be not nil", 0)
 	}()
 }
 
