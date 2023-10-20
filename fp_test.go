@@ -270,33 +270,10 @@ func TestSet(t *testing.T) {
 	require.True(t, Set(1, 2, 3, 4)[3])
 }
 
-// func TestNilAssertions(t *testing.T) {
-// 	func() {
-// 		defer func() {
-// 			v := recover()
-// 			require.NotNil(t, v)
-// 			err, ok := v.(error)
-// 			log.Println(err)
-// 			require.True(t, ok)
-// 			require.True(t, errors.Is(err, ErrNil))
-// 		}()
+func TestRef(t *testing.T) {
+	f := func(x *string) string {
+		return *x
+	}
 
-// 		var i *int
-// 		MustNonNil(i)
-// 	}()
-
-// 	func() {
-// 		defer func() {
-// 			v := recover()
-// 			require.NotNil(t, v)
-// 			err, ok := v.(error)
-// 			log.Println(err)
-// 			require.True(t, ok)
-// 			require.True(t, errors.Is(err, ErrNonNil))
-// 		}()
-
-// 		var i int
-// 		MustNil(&i)
-// 	}()
-
-// }
+	require.Equal(t, "ololo", f(Ref("ololo")))
+}

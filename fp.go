@@ -408,7 +408,7 @@ func Product[tA ComplexNumber](a ...tA) tA {
 }
 
 //////////
-/// Zero values
+/// Zero values and pointers
 
 func Zero[tA any]() tA {
 	var z tA
@@ -417,6 +417,10 @@ func Zero[tA any]() tA {
 
 func ZeroOf[tA any](tA) tA {
 	return Zero[tA]()
+}
+
+func Ref[tA any](v tA) *tA {
+	return &v
 }
 
 //////////
