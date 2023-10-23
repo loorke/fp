@@ -1,4 +1,4 @@
-# Go functional programming library built with generics
+# Go functional programming library based on generics
 
 This library introduces various functional programming miscellaneous that are
 useful in a number of scenarious. It aims to both provide some long-awaited 
