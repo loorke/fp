@@ -408,22 +408,6 @@ func Product[tA ComplexNumber](a ...tA) tA {
 }
 
 //////////
-/// Zero values and pointers
-
-func Zero[tA any]() tA {
-	var z tA
-	return z
-}
-
-func ZeroOf[tA any](tA) tA {
-	return Zero[tA]()
-}
-
-func Ref[tA any](v tA) *tA {
-	return &v
-}
-
-//////////
 /// Maps
 
 func MReduce[
@@ -573,4 +557,25 @@ func Set[tA comparable](a ...tA) map[tA]bool {
 		m[e] = true
 	}
 	return m
+}
+
+//////////
+/// Types
+
+func Assert[tA any](src any) tA {
+	dst := src.(tA)
+	return dst
+}
+
+func Ref[tA any](v tA) *tA {
+	return &v
+}
+
+func Zero[tA any]() tA {
+	var z tA
+	return z
+}
+
+func ZeroOf[tA any](tA) tA {
+	return Zero[tA]()
 }

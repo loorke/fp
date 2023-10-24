@@ -277,3 +277,8 @@ func TestRef(t *testing.T) {
 
 	require.Equal(t, "ololo", f(Ref("ololo")))
 }
+
+func TestAssert(t *testing.T) {
+	var dst []any = Map(Assert[any], 1, 2, 3, 4, 5, 6)
+	require.Equal(t, []any{1, 2, 3, 4, 5, 6}, dst)
+}
