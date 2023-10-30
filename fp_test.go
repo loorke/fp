@@ -266,10 +266,6 @@ func TestMust(t *testing.T) {
 	}()
 }
 
-func TestSet(t *testing.T) {
-	require.True(t, Set(1, 2, 3, 4)[3])
-}
-
 func TestRef(t *testing.T) {
 	f := func(x *string) string {
 		return *x

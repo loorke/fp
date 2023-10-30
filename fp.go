@@ -551,14 +551,6 @@ func CondZ[tA any](right tA) func(ok bool) tA {
 	return Cond(Zero[tA](), right)
 }
 
-func Set[tA comparable](a ...tA) map[tA]bool {
-	m := make(map[tA]bool, len(a))
-	for _, e := range a {
-		m[e] = true
-	}
-	return m
-}
-
 //////////
 /// Types
 
