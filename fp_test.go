@@ -266,6 +266,14 @@ func TestMust(t *testing.T) {
 	}()
 }
 
+func TestCast(t *testing.T) {
+	var _ int64 = CastNum[int64](float64(100))
+
+	type testType string
+
+	var _ []byte = CastStr[[]byte](testType("hello, world!"))
+}
+
 func TestRef(t *testing.T) {
 	f := func(x *string) string {
 		return *x

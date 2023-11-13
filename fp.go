@@ -25,6 +25,7 @@ Checks and validations
 	FreeFood = Set(food.Butter, food.Bread, food.Butter) // panics
 	FreeFood = Set(food.Butter, food.Bread, food.Oil) // ok
 */
+
 package fp
 
 import (
@@ -224,6 +225,10 @@ type Ordered interface {
 	RealNumber | ~string | ~rune | ~byte
 }
 
+type ByteString interface {
+	~string | ~[]byte
+}
+
 // Not(p)(x) == !p(x)
 func Not[
 	tA any,
@@ -276,8 +281,12 @@ func GtEq[tA Ordered](a tA) func(b tA) bool {
 	}
 }
 
-func Len[tA RealNumber, tB any](a ...tB) tA {
-	return tA(len(a))
+func Len[tB any](a ...tB) int {
+	return len(a)
+}
+
+func Len_[tA any, tS ~[]tA](a tS) int {
+	return len(a)
 }
 
 func MLen[
@@ -312,33 +321,47 @@ func IsNotZero[tA comparable](a tA) bool {
 	return a != Zero[tA]()
 }
 
-// Returns zero value if no arguments are provided
-func Minimum[tA Ordered](a ...tA) tA {
+// Returns zero value and -1 if no arguments are provided
+func MinimumIndex[tA Ordered](a ...tA) (min tA, indx int) {
 	if len(a) == 0 {
-		return Zero[tA]()
+		return Zero[tA](), -1
 	}
 
-	min := a[0]
-	for _, e := range a[1:] {
+	min = a[0]
+	for i, e := range a[1:] {
 		if e < min {
+			indx = i
 			min = e
 		}
 	}
+	return min, indx
+}
+
+// Returns zero value if no arguments are provided
+func Minimum[tA Ordered](a ...tA) tA {
+	min, _ := MinimumIndex(a...)
 	return min
+}
+
+// Returns zero value and -1 if no arguments are provided
+func MaximumIndex[tA Ordered](a ...tA) (max tA, indx int) {
+	if len(a) == 0 {
+		return Zero[tA](), -1
+	}
+
+	max = a[0]
+	for i, e := range a[1:] {
+		if e > max {
+			indx = i
+			max = e
+		}
+	}
+	return max, indx
 }
 
 // Returns zero value if no arguments are provided
 func Maximum[tA Ordered](a ...tA) tA {
-	if len(a) == 0 {
-		return Zero[tA]()
-	}
-
-	max := a[0]
-	for _, e := range a[1:] {
-		if e > max {
-			max = e
-		}
-	}
+	max, _ := MaximumIndex(a...)
 	return max
 }
 
@@ -505,8 +528,27 @@ func Must[
 	}
 }
 
-func MustNonNil(exceptionMsg string, a ...any) {
-	Must(IsNotZero, exceptionMsg, a...)
+func MustNonNil(a ...any) {
+	Must(IsNotZero, "nil value is not allowed", a...)
+}
+
+func MustNil(a ...any) {
+	Must(IsZero, "nil value is mandatory", a...)
+}
+
+func NoError[tA any](v tA, err error) tA {
+	MustNonNil(err)
+	return v
+}
+
+func NoError2[tA, tB any](a tA, b tB, err error) (tA, tB) {
+	MustNonNil(err)
+	return a, b
+}
+
+func NoError3[tA, tB, tC any](a tA, b tB, c tC, err error) (tA, tB, tC) {
+	MustNonNil(err)
+	return a, b, c
 }
 
 type MustError struct {
@@ -570,4 +612,12 @@ func Zero[tA any]() tA {
 
 func ZeroOf[tA any](tA) tA {
 	return Zero[tA]()
+}
+
+func CastNum[tA, tB RealNumber](a tB) tA {
+	return tA(a)
+}
+
+func CastStr[tA, tB ByteString](a tB) tA {
+	return tA(a)
 }
