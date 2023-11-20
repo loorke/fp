@@ -537,17 +537,17 @@ func MustNil(a ...any) {
 }
 
 func NoError[tA any](v tA, err error) tA {
-	MustNonNil(err)
+	MustNil(err)
 	return v
 }
 
 func NoError2[tA, tB any](a tA, b tB, err error) (tA, tB) {
-	MustNonNil(err)
+	MustNil(err)
 	return a, b
 }
 
 func NoError3[tA, tB, tC any](a tA, b tB, c tC, err error) (tA, tB, tC) {
-	MustNonNil(err)
+	MustNil(err)
 	return a, b, c
 }
 
