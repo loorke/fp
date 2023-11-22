@@ -596,6 +596,12 @@ func CondZ[tA any](right tA) func(ok bool) tA {
 //////////
 /// Types
 
+func AssertAll[tA, tB any](a ...tA) []tB {
+	return Map(func(v tA) tB {
+		return Assert[tB](v)
+	}, a...)
+}
+
 func Assert[tA any](src any) tA {
 	dst := src.(tA)
 	return dst
