@@ -2,9 +2,11 @@ package fp
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/require"
 )
 
@@ -287,4 +289,9 @@ func TestAssert(t *testing.T) {
 	require.Equal(t, []any{1, 2, 3, 4, 5, 6}, dst)
 
 	AssertAll[any](1, 2, 3, 4, 5)
+}
+
+func TestRand(t *testing.T) {
+	fmt.Println("Rand 1", spew.Sdump(RandChoose(1, 2, 3)))
+	fmt.Println("Rand 2", spew.Sdump(RandShuffle(1, 2, 3)))
 }

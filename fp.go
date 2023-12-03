@@ -30,6 +30,7 @@ package fp
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 func ReduceIndex[
@@ -626,4 +627,35 @@ func CastNum[tA, tB RealNumber](a tB) tA {
 
 func CastStr[tA, tB ByteString](a tB) tA {
 	return tA(a)
+}
+
+//////////
+/// Random
+
+// Returns zero value and -1 if len(a) == 0
+func RandChooseIndex[tA any](a ...tA) (tA, int) {
+	if len(a) == 0 {
+		return Zero[tA](), -1
+	}
+
+	i := rand.Intn(len(a))
+	return a[i], i
+}
+
+func RandChoose[tA any](a ...tA) tA {
+	v, _ := RandChooseIndex(a...)
+	return v
+}
+
+func RandShuffle[tA any](a ...tA) []tA {
+	res := make([]tA, len(a))
+	copy(res, a)
+	RandShuffle_(res)
+	return res
+}
+
+func RandShuffle_[tS ~[]tA, tA any](a tS) {
+	rand.Shuffle(len(a), func(i, j int) {
+		a[i], a[j] = a[j], a[i]
+	})
 }
