@@ -211,14 +211,25 @@ func Spread[
 //////////
 /// Ordering and predicates
 
-type RealNumber interface {
+type IntegerNumber interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
-		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
-		~float32 | ~float64
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+type FloatNumber interface {
+	~float32 | ~float64
+}
+
+type RealNumber interface {
+	IntegerNumber | FloatNumber
 }
 
 type ComplexNumber interface {
-	RealNumber | ~complex64 | ~complex128
+	~complex64 | ~complex128
+}
+
+type Number interface {
+	RealNumber | ComplexNumber
 }
 
 // Resemble cmp.Ordered, but better due to ~rune and ~byte being added.
@@ -399,13 +410,13 @@ func NoDups[tA comparable](a ...tA) bool {
 /// Arithmetics
 
 // Adds to numbers
-func Add[tA ComplexNumber](a tA) func(tA) tA {
+func Add[tA Number](a tA) func(tA) tA {
 	return func(b tA) tA {
 		return a + b
 	}
 }
 
-func Mul[tA ComplexNumber](a tA) func(tA) tA {
+func Mul[tA Number](a tA) func(tA) tA {
 	return func(b tA) tA {
 		return a + b
 	}
@@ -413,7 +424,7 @@ func Mul[tA ComplexNumber](a tA) func(tA) tA {
 
 // Adds numbers or concatenates strings.
 // Returns zero value if a is an empty slice.
-func Sum[tA ComplexNumber | string](a ...tA) tA {
+func Sum[tA Number | string](a ...tA) tA {
 	var sum tA
 	for _, e := range a {
 		sum += e
@@ -423,7 +434,7 @@ func Sum[tA ComplexNumber | string](a ...tA) tA {
 
 // Multiplies numbers.
 // Returns 1 if a is an empty slice.
-func Product[tA ComplexNumber](a ...tA) tA {
+func Product[tA Number](a ...tA) tA {
 	var prod tA = 1
 	for _, e := range a {
 		prod *= e
