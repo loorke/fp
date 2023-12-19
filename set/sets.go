@@ -46,3 +46,15 @@ func (sa Set[tA]) Diff(sb Set[tA]) Set[tA] {
 func (sa Set[tA]) SymmetricDiff(sb Set[tA]) Set[tA] {
 	return sa.Union(sb).Diff(sa.Intersection(sb))
 }
+
+func (sa Set[tA]) List() []tA {
+	a := make([]tA, 0, len(sa))
+	for e := range sa {
+		a = append(a, e)
+	}
+	return a
+}
+
+func (sa Set[tA]) Contains(e tA) bool {
+	return sa[e]
+}
