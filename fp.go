@@ -442,6 +442,14 @@ func Product[tA Number](a ...tA) tA {
 	return prod
 }
 
+func IsOdd[tA IntegerNumber](n tA) bool {
+	return n%2 != 0
+}
+
+func IsEven[tA IntegerNumber](n tA) bool {
+	return n%2 == 0
+}
+
 //////////
 /// Maps
 
