@@ -59,6 +59,8 @@ func (sa Set[tA]) Contains(e tA) bool {
 	return sa[e]
 }
 
-func (sa Set[tA]) Add(e tA) {
-	sa[e] = true
+func (sa Set[tA]) Add(es ...tA) {
+	for _, e := range es {
+		sa[e] = true
+	}
 }
