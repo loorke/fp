@@ -58,3 +58,7 @@ func (sa Set[tA]) List() []tA {
 func (sa Set[tA]) Contains(e tA) bool {
 	return sa[e]
 }
+
+func (sa Set[tA]) Add(e tA) {
+	sa[e] = true
+}
