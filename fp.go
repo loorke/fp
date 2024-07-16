@@ -418,7 +418,7 @@ func Add[tA Number](a tA) func(tA) tA {
 
 func Mul[tA Number](a tA) func(tA) tA {
 	return func(b tA) tA {
-		return a + b
+		return a * b
 	}
 }
 
