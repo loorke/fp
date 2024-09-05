@@ -730,3 +730,59 @@ func Apply5[
 		return f(a, b, c, d, e)
 	}
 }
+
+func Lazy2[
+	tA, tB, tC any,
+	tF ~func(tA, tB) tC,
+](f tF) func(a tA) func(tB) tC {
+	return func(a tA) func(tB) tC {
+		return func(b tB) tC {
+			return f(a, b)
+		}
+	}
+}
+
+func Lazy3[
+	tA, tB, tC, tD any,
+	tF ~func(tA, tB, tC) tD,
+](f tF) func(a tA) func(tB) func(tC) tD {
+	return func(a tA) func(tB) func(tC) tD {
+		return func(b tB) func(tC) tD {
+			return func(c tC) tD {
+				return f(a, b, c)
+			}
+		}
+	}
+}
+
+func Lazy4[
+	tA, tB, tC, tD, tE any,
+	tF ~func(tA, tB, tC, tD) tE,
+](f tF) func(a tA) func(tB) func(tC) func(tD) tE {
+	return func(a tA) func(tB) func(tC) func(tD) tE {
+		return func(b tB) func(tC) func(tD) tE {
+			return func(c tC) func(tD) tE {
+				return func(d tD) tE {
+					return f(a, b, c, d)
+				}
+			}
+		}
+	}
+}
+
+func Lazy5[
+	tA, tB, tC, tD, tE, tF any,
+	tG ~func(tA, tB, tC, tD, tE) tF,
+](f tG) func(a tA) func(tB) func(tC) func(tD) func(tE) tF {
+	return func(a tA) func(tB) func(tC) func(tD) func(tE) tF {
+		return func(b tB) func(tC) func(tD) func(tE) tF {
+			return func(c tC) func(tD) func(tE) tF {
+				return func(d tD) func(tE) tF {
+					return func(e tE) tF {
+						return f(a, b, c, d, e)
+					}
+				}
+			}
+		}
+	}
+}
