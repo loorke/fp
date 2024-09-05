@@ -410,16 +410,12 @@ func NoDups[tA comparable](a ...tA) bool {
 /// Arithmetics
 
 // Adds to numbers
-func Add[tA Number](a tA) func(tA) tA {
-	return func(b tA) tA {
-		return a + b
-	}
+func Add[tA Number | string](a tA) func(tA) tA {
+	return Apply1(Sum[tA])
 }
 
 func Mul[tA Number](a tA) func(tA) tA {
-	return func(b tA) tA {
-		return a * b
-	}
+	return Apply1(Product[tA])
 }
 
 // Adds numbers or concatenates strings.
@@ -677,4 +673,60 @@ func RandShuffle_[tS ~[]tA, tA any](a tS) {
 	rand.Shuffle(len(a), func(i, j int) {
 		a[i], a[j] = a[j], a[i]
 	})
+}
+
+//////////
+/// Concatenations
+
+func Concat[tA any](a ...[]tA) []tA {
+	var cap int
+	for _, e := range a {
+		cap += len(e)
+	}
+
+	return Reduce(func(acc, a []tA) []tA {
+		return append(acc, a...)
+	}, make([]tA, 0, cap), a...)
+}
+
+//////////
+/// Applicators
+
+func Apply1[tA, tB any, tF ~func(...tA) tB](f tF) func(a tA) tB {
+	return func(a tA) tB {
+		return f(a)
+	}
+}
+
+func Apply2[tA, tB any, tF ~func(...tA) tB](f tF) func(a, b tA) tB {
+	return func(a, b tA) tB {
+		return f(a, b)
+	}
+}
+
+func Apply3[
+	tA, tB any,
+	tF ~func(...tA) tB,
+](f tF) func(a, b, c tA) tB {
+	return func(a, b, c tA) tB {
+		return f(a, b, c)
+	}
+}
+
+func Apply4[
+	tA, tB any,
+	tF ~func(...tA) tB,
+](f tF) func(a, b, c, d tA) tB {
+	return func(a, b, c, d tA) tB {
+		return f(a, b, c, d)
+	}
+}
+
+func Apply5[
+	tA, tB any,
+	tF ~func(...tA) tB,
+](f tF) func(a, b, c, d, e tA) tB {
+	return func(a, b, c, d, e tA) tB {
+		return f(a, b, c, d, e)
+	}
 }
