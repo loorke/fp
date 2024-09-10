@@ -295,3 +295,7 @@ func TestRand(t *testing.T) {
 	fmt.Println("Rand 1", spew.Sdump(RandChoose(1, 2, 3)))
 	fmt.Println("Rand 2", spew.Sdump(RandShuffle(1, 2, 3)))
 }
+
+func TestStrConcat(t *testing.T) {
+	fmt.Println(Map(Add("ololo"), "1", "2", "3"))
+}

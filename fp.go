@@ -411,7 +411,7 @@ func NoDups[tA comparable](a ...tA) bool {
 
 // Adds to numbers
 func Add[tA Number | string](a tA) func(tA) tA {
-	return Apply1(Sum[tA])
+	return Lazy2(Apply2(Sum[tA]))(a)
 }
 
 func Mul[tA Number](a tA) func(tA) tA {
