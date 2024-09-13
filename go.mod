@@ -1,4 +1,4 @@
-module github.com/loorke/fp
+module gitlab.com/dtiplinskii/fp
 
 go 1.21
 
